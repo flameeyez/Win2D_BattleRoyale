@@ -14,5 +14,10 @@ namespace Win2D_BattleRoyale
 {
     public class RichListBoxLeaderboard : RichListBox
     {
+        public RichListBoxLeaderboard(CanvasDevice device, Vector2 position, int width, int height, string title, CanvasTextFormat titleFont, CanvasTextFormat stringsFont)
+            : base(device, position, width, height, title, titleFont, stringsFont, 0)
+        {
+
+        }
     }
 }

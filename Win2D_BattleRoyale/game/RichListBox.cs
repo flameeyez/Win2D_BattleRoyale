@@ -29,7 +29,10 @@ namespace Win2D_BattleRoyale
         #region Main Content
         protected List<RichStringPart> Strings = new List<RichStringPart>();
         protected CanvasTextLayout StringsTextLayout { get; set; }
+        public CanvasTextFormat StringsFont { get; set; }
         public Vector2 StringsPosition { get; set; }
+
+        public int MaxStrings { get; set; }
         #endregion
 
         #region Borders
@@ -38,11 +41,35 @@ namespace Win2D_BattleRoyale
         public Vector2 BarUnderTitleRight { get; set; }
         #endregion
 
-        public RichListBox()
+        public static int Padding = 10;
+
+        public RichListBox(CanvasDevice device, Vector2 position, int width, int height, string title, CanvasTextFormat titleFont, CanvasTextFormat stringsFont, int maxStrings = 0)
+        {
+            // base(device, position, width, 0, title, titleFont)
+            Position = position;
+
+            // title
+            Title = new CanvasTextLayout(device, title, titleFont, 0, 0);
+            TitlePosition = new Vector2(Position.X + Padding, Position.Y + Padding);
+
+            // width is derived from title bounds
+            Width = width;  //(int)Title.LayoutBounds.Width + Padding * 2;
+
+            // bar under title
+            BarUnderTitleLeft = new Vector2(Position.X, Position.Y + Padding * 2 + (float)Title.LayoutBounds.Height);
+            BarUnderTitleRight = new Vector2(Position.X + Width, Position.Y + Padding * 2 + (float)Title.LayoutBounds.Height);
+
+            // strings
+            StringsFont = stringsFont;
+            StringsTextLayout = new CanvasTextLayout(device, "THIS IS A PRETTY GOOD TEMP STRING", StringsFont, 0, 0);
+            StringsPosition = new Vector2(Position.X + Padding, BarUnderTitleRight.Y + Padding);
+
+            MaxStrings = maxStrings == 0 ? 1000 : maxStrings;
+        }
+
+        public virtual void Draw(CanvasAnimatedDrawEventArgs args)
         {
 
         }
-
-        public abstract void Draw(CanvasAnimatedDrawEventArgs args);
     }
 }
