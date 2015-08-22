@@ -46,8 +46,12 @@ namespace Win2D_BattleRoyale
             Statics.ColumnDividerTop = new Vector2(Statics.LeftColumnWidth + Statics.LeftColumnPadding * 2, 0);
             Statics.ColumnDividerBottom = new Vector2(Statics.LeftColumnWidth + Statics.LeftColumnPadding * 2, (float)sender.Size.Height);
 
-            rlb = new RichListBoxProminent(sender.Device, new Vector2(Statics.LeftColumnWidth + Statics.LeftColumnPadding * 2 + Statics.RightColumnPadding, Statics.RightColumnPadding),
-                Statics.RightColumnWidth, "Census of Recent Contentions", Statics.FontLarge, 20, Statics.FontSmall, true, Statics.FontLarge);
+            rlb = new RichListBoxProminent(sender.Device, 
+                                           new Vector2(Statics.LeftColumnWidth + Statics.LeftColumnPadding * 2 + Statics.RightColumnPadding, Statics.RightColumnPadding),
+                                           Statics.RightColumnWidth, 
+                                           "Census of Recent Contentions", Statics.FontLarge, 
+                                           20, Statics.FontSmall, 
+                                           Statics.FontLarge);
 
             Leaderboard.Position = new Vector2(rlb.Position.X, rlb.Position.Y + rlb.Height + Statics.RightColumnPadding);
             Leaderboard.Width = rlb.Width;
