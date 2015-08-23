@@ -14,12 +14,12 @@ namespace Win2D_BattleRoyale
 {
     public class RichListBoxProminent : RichListBox
     {
-        public CanvasTextFormat ProminentStringFont { get; set; }
-        private CanvasTextLayout ProminentStringLayout { get; set; }
+        private Vector2 BarUnderStringsLeft { get; set; }
+        private Vector2 BarUnderStringsRight { get; set; }
 
-        public Vector2 BarUnderStringsLeft { get; set; }
-        public Vector2 BarUnderStringsRight { get; set; }
-        public Vector2 ProminentStringPosition { get; set; }
+        private Vector2 ProminentStringPosition { get; set; }
+        private CanvasTextFormat ProminentStringFont { get; set; }
+        private CanvasTextLayout ProminentStringLayout { get; set; }
 
         public RichListBoxProminent(CanvasDevice device, Vector2 position, int width, string title, CanvasTextFormat titleFont, int maxStrings, CanvasTextFormat stringsFont, CanvasTextFormat prominentStringFont)
             : base(device, position, width, 0, title, titleFont, stringsFont, maxStrings)
@@ -46,14 +46,7 @@ namespace Win2D_BattleRoyale
         #region Draw/Update
         public override void Draw(CanvasAnimatedDrawEventArgs args)
         {
-            // border
-            args.DrawingSession.DrawRectangle(BorderRectangle, Colors.White);
-
-            // title
-            args.DrawingSession.DrawTextLayout(Title, TitlePosition, Colors.White);
-
-            // bar under title
-            args.DrawingSession.DrawLine(BarUnderTitleLeft, BarUnderTitleRight, Colors.White);
+            base.Draw(args);
 
             // strings
             float fCurrentY = StringsPosition.Y;

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 
 namespace Win2D_BattleRoyale
 {
-    public class Leader
+    public class Leader : IRichString
     {
         public string Title { get; set; }
         public string FirstName { get; set; }
@@ -45,6 +46,11 @@ namespace Win2D_BattleRoyale
         public string ToLeaderboardString()
         {
             return ToString() + ": " + Wins.ToString() + " (" + BattleWins.ToString() + "-" + BattleLosses.ToString() + ", " + ((double)BattleWins / (BattleWins + BattleLosses)).ToString("F3") + ")";
+        }
+
+        public RichStringPart ToRichString()
+        {
+            return new RichStringPart(ToLeaderboardString(), Colors.White);
         }
     }
 }

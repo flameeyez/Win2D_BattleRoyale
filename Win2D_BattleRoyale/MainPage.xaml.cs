@@ -21,7 +21,8 @@ namespace Win2D_BattleRoyale
     public sealed partial class MainPage : Page
     {
         Map map;
-        RichListBoxProminent rlb;
+        RichListBoxProminent rlbProminent;
+        RichListBoxLeaderboard rlbLeaderboard;
 
         public MainPage()
         {
@@ -46,16 +47,25 @@ namespace Win2D_BattleRoyale
             Statics.ColumnDividerTop = new Vector2(Statics.LeftColumnWidth + Statics.LeftColumnPadding * 2, 0);
             Statics.ColumnDividerBottom = new Vector2(Statics.LeftColumnWidth + Statics.LeftColumnPadding * 2, (float)sender.Size.Height);
 
-            rlb = new RichListBoxProminent(sender.Device, 
+            rlbProminent = new RichListBoxProminent(sender.Device, 
                                            new Vector2(Statics.LeftColumnWidth + Statics.LeftColumnPadding * 2 + Statics.RightColumnPadding, Statics.RightColumnPadding),
                                            Statics.RightColumnWidth, 
                                            "Census of Recent Contentions", Statics.FontLarge, 
                                            20, Statics.FontSmall, 
                                            Statics.FontLarge);
 
-            Leaderboard.Position = new Vector2(rlb.Position.X, rlb.Position.Y + rlb.Height + Statics.RightColumnPadding);
-            Leaderboard.Width = rlb.Width;
-            Leaderboard.Height = (int)sender.Size.Height - rlb.Height - Statics.RightColumnPadding * 3;
+            rlbLeaderboard = new RichListBoxLeaderboard(sender.Device,
+                                                        new Vector2(rlbProminent.Position.X, rlbProminent.Position.Y + rlbProminent.Height + Statics.RightColumnPadding),
+                                                        rlbProminent.Width,
+                                                        (int)sender.Size.Height - rlbProminent.Height - Statics.RightColumnPadding * 3,
+                                                        "Champions of the Realm",
+                                                        Statics.FontLarge,
+                                                        Statics.FontSmall,
+                                                        Statics.FontMedium);
+
+            //Leaderboard.Position = new Vector2(rlb.Position.X, rlb.Position.Y + rlb.Height + Statics.RightColumnPadding);
+            //Leaderboard.Width = rlb.Width;
+            //Leaderboard.Height = (int)sender.Size.Height - rlb.Height - Statics.RightColumnPadding * 3;
 
             // resets map, listbox, debug frame count
             Reset(sender);
@@ -63,19 +73,8 @@ namespace Win2D_BattleRoyale
         private void Reset(ICanvasAnimatedControl sender)
         {
             Statics.FrameCount = 0;
-            rlb.Clear();
+            rlbProminent.Clear();
             map = new Map(Statics.MapPosition);
-
-            //rlb.Add(new RichStringPart("DEBUG 1", Colors.Red));
-            //rlb.Add(new RichStringPart("DEBUG 2", Colors.Orange));
-            //rlb.Add(new RichStringPart("DEBUG 3", Colors.Yellow));
-            //rlb.Add(new RichStringPart("DEBUG 4", Colors.Green));
-            //rlb.Add(new RichStringPart("DEBUG 5", Colors.Blue));
-            //rlb.Add(new RichStringPart("DEBUG 6", Colors.Indigo));
-            //rlb.Add(new RichStringPart("DEBUG 7", Colors.Violet));
-            //rlb.Add(new RichStringPart("DEBUG 8", Colors.Brown));
-            //rlb.Add(new RichStringPart("DEBUG 9", Colors.Pink));
-            //rlb.Add(new RichStringPart("DEBUG 10", Colors.Turquoise));
         }
         #endregion
 
@@ -83,9 +82,11 @@ namespace Win2D_BattleRoyale
         private void canvasMain_Draw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
         {
             map.Draw(args);
-            rlb.Draw(args);
+            rlbProminent.Draw(args);
+            rlbLeaderboard.Draw(args);
+
             // args.DrawingSession.DrawLine(Statics.ColumnDividerTop, Statics.ColumnDividerBottom, Colors.White);
-            Leaderboard.Draw(args);
+            // Leaderboard.Draw(args);
 
             DrawDebug(args);
         }
@@ -93,9 +94,6 @@ namespace Win2D_BattleRoyale
         {
             args.DrawingSession.DrawText("Mouse: " + Statics.MouseX.ToString() + ", " + Statics.MouseY.ToString(), new Vector2(1200, 800), Colors.White);
             args.DrawingSession.DrawText("Max String: " + Statics.MaxStringWidth.ToString(), new Vector2(1200, 820), Colors.White);
-
-            //args.DrawingSession.DrawText("Frame Counter: " + nFrameCount.ToString(), new System.Numerics.Vector2(1000, 10), Colors.White);
-            //args.DrawingSession.DrawText("Frame Time: " + args.Timing.ElapsedTime.TotalMilliseconds.ToString() + "ms", new System.Numerics.Vector2(1000, 30), Colors.White);
         }
         #endregion
 
@@ -109,7 +107,7 @@ namespace Win2D_BattleRoyale
             else
             {
                 Statics.FrameCount++;
-                map.Update(rlb, args);
+                map.Update(rlbProminent, args);
             }
         }
         #endregion

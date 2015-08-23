@@ -54,6 +54,7 @@ namespace Win2D_BattleRoyale
 
             // width is derived from title bounds
             Width = width;  //(int)Title.LayoutBounds.Width + Padding * 2;
+            Height = height;
 
             // bar under title
             BarUnderTitleLeft = new Vector2(Position.X, Position.Y + Padding * 2 + (float)Title.LayoutBounds.Height);
@@ -65,11 +66,20 @@ namespace Win2D_BattleRoyale
             StringsPosition = new Vector2(Position.X + Padding, BarUnderTitleRight.Y + Padding);
 
             MaxStrings = maxStrings == 0 ? 1000 : maxStrings;
+
+            BorderRectangle = new Rect(Position.X, Position.Y, Width, Height);
         }
 
         public virtual void Draw(CanvasAnimatedDrawEventArgs args)
         {
+            // border
+            args.DrawingSession.DrawRectangle(BorderRectangle, Colors.White);
 
+            // title
+            args.DrawingSession.DrawTextLayout(Title, TitlePosition, Colors.White);
+
+            // bar under title
+            args.DrawingSession.DrawLine(BarUnderTitleLeft, BarUnderTitleRight, Colors.White);
         }
     }
 }

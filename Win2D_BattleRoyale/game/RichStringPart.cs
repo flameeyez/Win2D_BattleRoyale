@@ -2,7 +2,7 @@
 
 namespace Win2D_BattleRoyale
 {
-    public class RichStringPart
+    public class RichStringPart : IRichString
     {
         public string String { get; set; }
         public Color Color { get; set; }
@@ -11,6 +11,11 @@ namespace Win2D_BattleRoyale
         {
             String = str;
             Color = color;
+        }
+
+        public RichStringPart ToRichString()
+        {
+            return this;
         }
     }
 }
