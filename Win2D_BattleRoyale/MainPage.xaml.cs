@@ -102,6 +102,8 @@ namespace Win2D_BattleRoyale
         {
             if (map.Finished)
             {
+                // TODO: more separation of Leaderboard and RichListBoxLeaderboard
+                Leaderboard.DeclareWinner(map.Regions[0].Leader.FullName);
                 Reset(sender);
             }
             else

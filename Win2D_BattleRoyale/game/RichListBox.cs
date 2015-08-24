@@ -27,7 +27,7 @@ namespace Win2D_BattleRoyale
         #endregion
 
         #region Main Content
-        protected List<RichStringPart> Strings = new List<RichStringPart>();
+        protected List<IRichString> Strings = new List<IRichString>();
         protected CanvasTextLayout StringsTextLayout { get; set; }
         public CanvasTextFormat StringsFont { get; set; }
         public Vector2 StringsPosition { get; set; }

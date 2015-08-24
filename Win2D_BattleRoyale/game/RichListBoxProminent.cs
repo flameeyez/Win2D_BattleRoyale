@@ -52,7 +52,8 @@ namespace Win2D_BattleRoyale
             float fCurrentY = StringsPosition.Y;
             for (int i = 0; i < Strings.Count - 1; i++)
             {
-                args.DrawingSession.DrawText(Strings[i].String, new Vector2(StringsPosition.X, fCurrentY), Strings[i].Color, StringsFont);
+                RichStringPart str = Strings[i].ToRichString();
+                args.DrawingSession.DrawText(str.String, new Vector2(StringsPosition.X, fCurrentY), str.Color, StringsFont);
                 fCurrentY += (float)StringsTextLayout.LayoutBounds.Height;
             }
 
@@ -61,11 +62,13 @@ namespace Win2D_BattleRoyale
 
             if (Strings.Count > 0)
             {
+                RichStringPart str = Strings[Strings.Count - 1].ToRichString();
+
                 // prominent string
-                args.DrawingSession.DrawText(Strings[Strings.Count - 1].String, ProminentStringPosition, Strings[Strings.Count - 1].Color, ProminentStringFont);
+                args.DrawingSession.DrawText(str.String, ProminentStringPosition, str.Color, ProminentStringFont);
 
                 // debug
-                CanvasTextLayout layout = new CanvasTextLayout(args.DrawingSession.Device, Strings[Strings.Count - 1].String, ProminentStringFont, 0, 0);
+                CanvasTextLayout layout = new CanvasTextLayout(args.DrawingSession.Device, str.String, ProminentStringFont, 0, 0);
                 Statics.MaxStringWidth = ((int)layout.LayoutBounds.Width > Statics.MaxStringWidth) ? (int)layout.LayoutBounds.Width : Statics.MaxStringWidth;
             }
         }

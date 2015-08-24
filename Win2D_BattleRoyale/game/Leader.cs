@@ -12,6 +12,13 @@ namespace Win2D_BattleRoyale
         public string Title { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string FullName
+        {
+            get
+            {
+                return Title + " " + FirstName + " " + LastName;
+            }
+        }
         public int Wins { get; set; }
 
         public int BattleWins { get; set; }
@@ -40,7 +47,7 @@ namespace Win2D_BattleRoyale
 
         public override string ToString()
         {
-            return Title + " " + FirstName + " " + LastName;
+            return FullName;
         }
 
         public string ToLeaderboardString()
