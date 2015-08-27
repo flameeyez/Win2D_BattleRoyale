@@ -13,16 +13,17 @@ namespace Win2D_BattleRoyale
     public class RichString : IRichString
     {
         private List<RichStringPart> Parts = new List<RichStringPart>();
-
+        private CanvasTextFormat LastFont { get; set; }
+        private List<float> Widths = new List<float>();
         public float Width
         {
             get
             {
-                return Parts.Select(x => x.Width).Sum();
+                return Widths.Sum();
             }
         }
 
-        public RichString(RichStringPart initialStringPart, CanvasTextFormat )
+        public RichString(RichStringPart initialStringPart)
         {
             Parts.Add(initialStringPart);
         }

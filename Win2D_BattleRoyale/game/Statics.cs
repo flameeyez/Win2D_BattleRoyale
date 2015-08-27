@@ -41,7 +41,7 @@ namespace Win2D_BattleRoyale
 
         // timing
         public static int MapUpdateThreshold = 0; //500;
-        public static int PauseBetweenBattlesMilliseconds = 0;//500;
+        public static int PauseBetweenBattlesMilliseconds = 500;
 
         public static Random Random = new Random(DateTime.Now.Millisecond);
         public static CanvasTextFormat FontSmall = new CanvasTextFormat();

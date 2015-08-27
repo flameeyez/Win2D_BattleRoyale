@@ -51,7 +51,7 @@ namespace Win2D_BattleRoyale
                 RichString str = Leaders[i].ToRichString();
 
                 //CanvasTextLayout layout = new CanvasTextLayout(args.DrawingSession, str.String, LeadersFont, 0, 0);
-                float x = Position.X + (Width - str.Width) / 2;
+                float x = Position.X;// + (Width - str.Width) / 2;
 
                 str.Draw(args, 
                     new Vector2(x, LeadersPosition.Y + i * (float)LeadersTextLayout.LayoutBounds.Height), 
