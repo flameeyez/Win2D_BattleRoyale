@@ -63,9 +63,9 @@ namespace Win2D_BattleRoyale
                                                         Statics.FontSmall,
                                                         Statics.FontMedium);
 
-            //Leaderboard.Position = new Vector2(rlb.Position.X, rlb.Position.Y + rlb.Height + Statics.RightColumnPadding);
-            //Leaderboard.Width = rlb.Width;
-            //Leaderboard.Height = (int)sender.Size.Height - rlb.Height - Statics.RightColumnPadding * 3;
+            // initialize leaderboard listbox
+            Leaderboard.AttachedListbox = rlbLeaderboard;
+            Leaderboard.InitializeListboxInfo();
 
             // resets map, listbox, debug frame count
             Reset(sender);
@@ -102,7 +102,6 @@ namespace Win2D_BattleRoyale
         {
             if (map.Finished)
             {
-                // TODO: more separation of Leaderboard and RichListBoxLeaderboard
                 Leaderboard.DeclareWinner(map.Regions[0].Leader.FullName);
                 Reset(sender);
             }

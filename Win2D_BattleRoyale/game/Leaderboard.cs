@@ -14,6 +14,7 @@ namespace Win2D_BattleRoyale
     public static class Leaderboard
     {
         public static List<Leader> Leaders = new List<Leader>();
+        public static RichListBoxLeaderboard AttachedListbox { get; set; }
 
         public static void DeclareWinner(string strWinner)
         {
@@ -30,6 +31,7 @@ namespace Win2D_BattleRoyale
                     }
 
                     Leaders.Sort((x, y) => y.Wins.CompareTo(x.Wins));
+                    UpdateListboxInfo();
                     break;
                 }
             }
@@ -66,42 +68,48 @@ namespace Win2D_BattleRoyale
             Leaders.Add(new Leader("Dawn", "Wood", "F"));
         }
 
-        //    public static void Draw(CanvasAnimatedDrawEventArgs args)
-        //    {
-        //        args.DrawingSession.DrawRectangle(new Rect(Position.X, Position.Y, Width, Height), Colors.White);
+        public static void InitializeListboxInfo()
+        {
+            if (AttachedListbox == null) { return; }
 
-        //        //args.DrawingSession.DrawText("Champions of the Realm", new Vector2(Position.X, 413), Colors.White, Statics.FontLarge);
+            foreach (Leader leader in Leaderboard.Leaders)
+            {
+                AttachedListbox.Strings.Add(leader);
+            }
 
-        //        //float fCurrentX = Position.X;
-        //        //float fCurrentY = Position.Y;
+            return;
 
-        //        //int i = 0;
-        //        //while (Leaders[i].Wins == Leaders[0].Wins && Leaders[0].Wins > 0)
-        //        //{
-        //        //    args.DrawingSession.DrawText(Leaders[i].ToLeaderboardString(), new Vector2(fCurrentX + 200, fCurrentY), Colors.White, Statics.FontMedium);
-        //        //    fCurrentY += 27;
-        //        //    i++;
-        //        //}
+        }
+        public static void UpdateListboxInfo()
+        {
+            if(AttachedListbox == null) { return; }
 
-        //        //if (i > 0) { fCurrentY += 20; }
-        //        //float fBelowLeadersY = fCurrentY;
+            AttachedListbox.Leaders.Clear();
+            AttachedListbox.Strings.Clear();
 
-        //        //while (fCurrentY < 940 && i < Leaders.Count)
-        //        //{
-        //        //    args.DrawingSession.DrawText(Leaders[i].ToLeaderboardString(), new Vector2(fCurrentX, fCurrentY), Colors.White, Statics.FontSmall);
-        //        //    fCurrentY += 20;
-        //        //    i++;
-        //        //}
+            // leaderboard is sorted
+            AttachedListbox.Leaders.Add(Leaderboard.Leaders[0]);
 
-        //        //fCurrentX += 450;
-        //        //fCurrentY = fBelowLeadersY;
+            int i = 1;
+            for (i = 1; i < Leaderboard.Leaders.Count; i++)
+            {
+                if (Leaderboard.Leaders[i].Wins == Leaderboard.Leaders[0].Wins)
+                {
+                    AttachedListbox.Leaders.Add(Leaderboard.Leaders[i]);
+                }
+                else
+                {
+                    break;
+                }
+            }
 
-        //        //while (i < Leaders.Count)
-        //        //{
-        //        //    args.DrawingSession.DrawText(Leaders[i].ToLeaderboardString(), new Vector2(fCurrentX, fCurrentY), Colors.White, Statics.FontSmall);
-        //        //    fCurrentY += 20;
-        //        //    i++;
-        //        //}
-        //    }
+            while (i < Leaderboard.Leaders.Count)
+            {
+                AttachedListbox.Strings.Add(Leaderboard.Leaders[i]);
+                i++;
+            }
+
+            AttachedListbox.RecalculateLayout();
+        }
     }
 }

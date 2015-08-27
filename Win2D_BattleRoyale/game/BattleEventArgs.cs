@@ -13,7 +13,7 @@ namespace Win2D_BattleRoyale
         public Region Loser { get; set; }
 
         private int _overtakestep { get; set; }
-        private static int _overtakeframes = 50;
+        private static int _overtakeframes = 1;//50;
         public int OvertakeStep
         {
             get
