@@ -1,21 +1,34 @@
-﻿using Windows.UI;
+﻿using Microsoft.Graphics.Canvas.Text;
+using Microsoft.Graphics.Canvas.UI.Xaml;
+using Windows.UI;
 
 namespace Win2D_BattleRoyale
 {
-    public class RichStringPart : IRichString
+    public class RichStringPart
     {
         public string String { get; set; }
         public Color Color { get; set; }
+        public CanvasTextFormat Font { get; set; }
+        private CanvasTextLayout Layout { get; set; }
 
-        public RichStringPart(string str, Color color)
+        public RichStringPart(string str, Color color, CanvasTextFormat font, CanvasAnimatedDrawEventArgs args)
         {
             String = str;
             Color = color;
+            Font = font;
+
+            Layout = new CanvasTextLayout(args.DrawingSession, str, font, 0, 0);
         }
 
-        public RichStringPart ToRichString()
+        public RichStringPart(string str)
         {
-            return this;
+            String = str;
+            Color = Colors.White;
+        }
+
+        public void Draw()
+        {
+
         }
     }
 }

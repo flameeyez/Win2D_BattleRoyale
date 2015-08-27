@@ -88,7 +88,7 @@ namespace Win2D_BattleRoyale
             // args.DrawingSession.DrawLine(Statics.ColumnDividerTop, Statics.ColumnDividerBottom, Colors.White);
             // Leaderboard.Draw(args);
 
-            DrawDebug(args);
+            //DrawDebug(args);
         }
         private void DrawDebug(CanvasAnimatedDrawEventArgs args)
         {
@@ -102,7 +102,6 @@ namespace Win2D_BattleRoyale
         {
             if (map.Finished)
             {
-                Leaderboard.DeclareWinner(map.Regions[0].Leader.FullName);
                 Reset(sender);
             }
             else

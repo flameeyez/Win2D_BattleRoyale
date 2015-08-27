@@ -55,9 +55,9 @@ namespace Win2D_BattleRoyale
             return ToString() + ": " + Wins.ToString() + " (" + BattleWins.ToString() + "-" + BattleLosses.ToString() + ", " + ((double)BattleWins / (BattleWins + BattleLosses)).ToString("F3") + ")";
         }
 
-        public RichStringPart ToRichString()
+        public RichString ToRichString()
         {
-            return new RichStringPart(ToLeaderboardString(), Colors.White);
+            return new RichString(ToLeaderboardString());
         }
     }
 }

@@ -18,9 +18,7 @@ namespace Win2D_BattleRoyale
         private CanvasTextFormat LeadersFont { get; set; }
         private CanvasTextLayout LeadersTextLayout { get; set; }
 
-        private static CanvasTextLayout NoLeadersTextLayout { get; set; }
-
-        // subset of Strings (cast as Leaders, most wins)
+        // subset of Strings (cast as Leaders, sorted on most wins)
         public List<Leader> Leaders = new List<Leader>();
 
         private int MaxY { get; set; }
@@ -34,12 +32,10 @@ namespace Win2D_BattleRoyale
             LeadersTextLayout = new CanvasTextLayout(device, "ABCDEFG", LeadersFont, 0, 0);
 
             // calculate leaders position Y (X is calculated for each string)
-            LeadersPosition = new Vector2(0, StringsPosition.Y);
+            LeadersPosition = new Vector2(StringsPosition.X, StringsPosition.Y);
 
             // leaders position is dynamic
             // strings position is dynamic
-
-            NoLeadersTextLayout = new CanvasTextLayout(device, "No champions thusfar!", StringsFont, 0, 0);
 
             MaxY = (int)Position.Y + Height - Padding;
         }
@@ -48,50 +44,48 @@ namespace Win2D_BattleRoyale
         {
             base.Draw(args);
 
-            float fCurrentY = StringsPosition.Y;
-
             // draw leaders
-            //if (Leaders.Count == 0)
-            //{
-            //    args.DrawingSession.DrawTextLayout(NoLeadersTextLayout, StringsPosition, Colors.White);
-            //}
-            //else
-            //{
-            foreach (Leader leader in Leaders)
+            int i = 0;
+            for(i = 0; i < Leaders.Count; i++)
             {
-                RichStringPart str = leader.ToRichString();
-                args.DrawingSession.DrawText(str.String, new Vector2(LeadersPosition.X, fCurrentY), str.Color, LeadersFont);
-                fCurrentY += (float)LeadersTextLayout.LayoutBounds.Height;
+                RichString str = Leaders[i].ToRichString();
+
+                //CanvasTextLayout layout = new CanvasTextLayout(args.DrawingSession, str.String, LeadersFont, 0, 0);
+                float x = Position.X + (Width - str.Width) / 2;
+
+                str.Draw(args, 
+                    new Vector2(x, LeadersPosition.Y + i * (float)LeadersTextLayout.LayoutBounds.Height), 
+                    LeadersFont);
             }
 
             // draw first column of strings
-            int i = 0;
+            float fCurrentY = StringsPosition.Y;
+            i = 0;
             while ((fCurrentY + (float)StringsTextLayout.LayoutBounds.Height) < MaxY && i < Strings.Count)
             {
-                RichStringPart str = Strings[i].ToRichString();
-                args.DrawingSession.DrawText(str.String, new Vector2(StringsPosition.X, fCurrentY), str.Color, StringsFont);
+                RichString str = Strings[i].ToRichString();
+                str.Draw(args, new Vector2(StringsPosition.X, fCurrentY), StringsFont);
                 fCurrentY += (float)StringsTextLayout.LayoutBounds.Height;
                 i++;
             }
 
-            // set new x position as listboxposition.x + half width + padding
+            // set second column x position
             float fCurrentX = Position.X + Width / 2 + Padding;
             fCurrentY = StringsPosition.Y;
 
             // draw second column of strings
             while (i < Strings.Count)
             {
-                RichStringPart str = Strings[i].ToRichString();
-                args.DrawingSession.DrawText(str.String, new Vector2(fCurrentX, fCurrentY), str.Color, StringsFont);
+                RichString str = Strings[i].ToRichString();
+                str.Draw(args, new Vector2(fCurrentX, fCurrentY), StringsFont);
                 fCurrentY += (float)StringsTextLayout.LayoutBounds.Height;
                 i++;
             }
-            //}
         }
 
         public void RecalculateLayout()
         {
-            StringsPosition = new Vector2(Position.X + Padding, LeadersPosition.Y + (float)LeadersTextLayout.LayoutBounds.Height * Leaders.Count);
+            StringsPosition = new Vector2(Position.X + Padding, LeadersPosition.Y + (float)LeadersTextLayout.LayoutBounds.Height * Leaders.Count + Padding);
         }
     }
 }

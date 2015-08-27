@@ -36,9 +36,13 @@ namespace Win2D_BattleRoyale
             return Winner.Name + " " + DefeatString + " " + Loser.Name + "\n";
         }
 
-        public RichStringPart ToRichString()
+        public RichString ToRichString()
         {
-            return new RichStringPart(this.ToString(), this.Winner.Color);
+            RichString rs = new RichString(new RichStringPart(Winner.Name + " ", Winner.Color));
+            rs.Add(new RichStringPart(DefeatString + " "));
+            rs.Add(new RichStringPart(Loser.Name, Loser.Color));
+
+            return rs;
         }
     }
 }

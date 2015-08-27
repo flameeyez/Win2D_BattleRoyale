@@ -52,8 +52,8 @@ namespace Win2D_BattleRoyale
             float fCurrentY = StringsPosition.Y;
             for (int i = 0; i < Strings.Count - 1; i++)
             {
-                RichStringPart str = Strings[i].ToRichString();
-                args.DrawingSession.DrawText(str.String, new Vector2(StringsPosition.X, fCurrentY), str.Color, StringsFont);
+                RichString str = Strings[i].ToRichString();
+                str.Draw(args, new Vector2(StringsPosition.X, fCurrentY), StringsFont);
                 fCurrentY += (float)StringsTextLayout.LayoutBounds.Height;
             }
 
@@ -62,14 +62,14 @@ namespace Win2D_BattleRoyale
 
             if (Strings.Count > 0)
             {
-                RichStringPart str = Strings[Strings.Count - 1].ToRichString();
+                RichString str = Strings[Strings.Count - 1].ToRichString();
 
                 // prominent string
-                args.DrawingSession.DrawText(str.String, ProminentStringPosition, str.Color, ProminentStringFont);
+                str.Draw(args, ProminentStringPosition, ProminentStringFont);
 
                 // debug
-                CanvasTextLayout layout = new CanvasTextLayout(args.DrawingSession.Device, str.String, ProminentStringFont, 0, 0);
-                Statics.MaxStringWidth = ((int)layout.LayoutBounds.Width > Statics.MaxStringWidth) ? (int)layout.LayoutBounds.Width : Statics.MaxStringWidth;
+                //CanvasTextLayout layout = new CanvasTextLayout(args.DrawingSession.Device, str.String, ProminentStringFont, 0, 0);
+                //Statics.MaxStringWidth = ((int)layout.LayoutBounds.Width > Statics.MaxStringWidth) ? (int)layout.LayoutBounds.Width : Statics.MaxStringWidth;
             }
         }
         public void Update(CanvasAnimatedUpdateEventArgs args)
@@ -79,7 +79,7 @@ namespace Win2D_BattleRoyale
         #endregion
 
         #region Add/Remove
-        public void Add(RichStringPart str)
+        public void Add(RichString str)
         {
             if (str == null) { return; }
 
@@ -89,7 +89,7 @@ namespace Win2D_BattleRoyale
                 Strings.RemoveAt(0);
             }
         }
-        public bool Remove(RichStringPart str)
+        public bool Remove(RichString str)
         {
             return Strings.Remove(str);
         }

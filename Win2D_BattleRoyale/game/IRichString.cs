@@ -8,6 +8,6 @@ namespace Win2D_BattleRoyale
 {
     public interface IRichString
     {
-        RichStringPart ToRichString();
+        RichString ToRichString();
     }
 }
