@@ -51,7 +51,7 @@ namespace Win2D_BattleRoyale
                                            new Vector2(Statics.LeftColumnWidth + Statics.LeftColumnPadding * 2 + Statics.RightColumnPadding, Statics.RightColumnPadding),
                                            Statics.RightColumnWidth, 
                                            "Census of Recent Contentions", Statics.FontLarge, 
-                                           20, Statics.FontSmall, 
+                                           15, Statics.FontSmall, 
                                            Statics.FontLarge);
 
             rlbLeaderboard = new RichListBoxLeaderboard(sender.Device,

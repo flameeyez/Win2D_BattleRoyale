@@ -51,7 +51,7 @@ namespace Win2D_BattleRoyale
                 RichString str = Leaders[i].ToRichString();
 
                 //CanvasTextLayout layout = new CanvasTextLayout(args.DrawingSession, str.String, LeadersFont, 0, 0);
-                float x = Position.X;// + (Width - str.Width) / 2;
+                float x = Padding + Position.X;// + (Width - str.Width) / 2;
 
                 str.Draw(args, 
                     new Vector2(x, LeadersPosition.Y + i * (float)LeadersTextLayout.LayoutBounds.Height), 
@@ -74,7 +74,7 @@ namespace Win2D_BattleRoyale
             fCurrentY = StringsPosition.Y;
 
             // draw second column of strings
-            while (i < Strings.Count)
+            while ((fCurrentY + (float)StringsTextLayout.LayoutBounds.Height) < MaxY && i < Strings.Count)
             {
                 RichString str = Strings[i].ToRichString();
                 str.Draw(args, new Vector2(fCurrentX, fCurrentY), StringsFont);

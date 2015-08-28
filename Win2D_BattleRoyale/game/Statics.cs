@@ -97,7 +97,17 @@ namespace Win2D_BattleRoyale
             "Emperor",
             "Duke",
             "Prince",
-            "Almighty Ruler"
+            "Almighty Ruler",
+            "Baron",
+            "Earl",
+            "Jarl",
+            "Lord",
+            "Count",
+            "Marquis",
+            "Tsar",
+            "Kaiser",
+            "Emir",
+            "Viceroy"
         };
 
         public static string[] FemaleTitles = {
@@ -105,7 +115,14 @@ namespace Win2D_BattleRoyale
             "Empress",
             "Duchess",
             "Princess",
-            "Almighty Ruler"
+            "Almighty Ruler",
+            "Baroness",
+            "Lady",
+            "Countess",
+            "Marquise",
+            "Tsarina",
+            "Emira",
+            "Vicereine"
         };
 
 
