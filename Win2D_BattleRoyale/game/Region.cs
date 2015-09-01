@@ -13,9 +13,12 @@ namespace Win2D_BattleRoyale
         public Color Color { get; set; }
         public int FailedExpansionCount { get; set; }
         public string Name { get; set; }
-        public Leader Leader { get; set; }
 
-        public Region OvertakingRegion { get; set; }
+        public HashSet<Region> NeighboringRegions = new HashSet<Region>();
+        
+        public Faction ControllingFaction { get; set; }
+        public Faction OvertakingFaction { get; set; }
+
         private int _overtakingframe = 0;
 
         // list of x,y coordinates for the region
@@ -23,8 +26,7 @@ namespace Win2D_BattleRoyale
 
         public Region(int id, Tile[,] MasterTileList)
         {
-            Leader = Leaderboard.Leaders.RandomLeader();
-            Name = Statics.RandomRegionName(Leader);
+            Name = Statics.RandomRegionType();
 
             int TileCountX = MasterTileList.GetLength(0);
             int TileCountY = MasterTileList.GetLength(1);
@@ -43,10 +45,11 @@ namespace Win2D_BattleRoyale
             }
 
             // create this tile
-            Tiles.Add(MasterTileList[x, y]);
-            MasterTileList[x, y].Available = false;
-            MasterTileList[x, y].Region = ID;
-            
+            Tile startingTile = MasterTileList[x, y];
+            Tiles.Add(startingTile);
+            startingTile.Available = false;
+            startingTile.Region = ID;
+
             // if able, grow until minimum size reached, then possibly grow more
             while (((Tiles.Count < Statics.MinimumRegionSize) || (Statics.Random.Next(100) < Statics.ProbabilityOfExpansion)) && HasAvailableNeighboringTile(MasterTileList))
             {
@@ -56,10 +59,10 @@ namespace Win2D_BattleRoyale
                 y = (int)currentTile.Coordinates.Y;
 
                 int nExpansionDirection = Statics.Random.Next(4);
-                bool bExpanded = false;
                 int nExpansionAttempts = 0;
 
-                while (!bExpanded && nExpansionAttempts < 4)
+                Tile expansionTile = null;
+                while (expansionTile == null && nExpansionAttempts < 4)
                 {
                     nExpansionAttempts++;
                     nExpansionDirection = (nExpansionDirection + 1) % 4;
@@ -69,46 +72,40 @@ namespace Win2D_BattleRoyale
                             // try to grow left
                             if (x > 0 && MasterTileList[x - 1, y].Available)
                             {
-                                Tiles.Add(MasterTileList[x - 1, y]);
-                                MasterTileList[x - 1, y].Available = false;
-                                MasterTileList[x - 1, y].Region = ID;
-                                bExpanded = true;
+                                expansionTile = MasterTileList[x - 1, y];
                             }
                             break;
                         case 1:
                             // try to grow right
                             if (x < TileCountX - 1 && MasterTileList[x + 1, y].Available)
                             {
-                                Tiles.Add(MasterTileList[x + 1, y]);
-                                MasterTileList[x + 1, y].Available = false;
-                                MasterTileList[x + 1, y].Region = ID;
-                                bExpanded = true;
+                                expansionTile = MasterTileList[x + 1, y];
                             }
                             break;
                         case 2:
                             // try to grow up
                             if (y > 0 && MasterTileList[x, y - 1].Available)
                             {
-                                Tiles.Add(MasterTileList[x, y - 1]);
-                                MasterTileList[x, y - 1].Available = false;
-                                MasterTileList[x, y - 1].Region = ID;
-                                bExpanded = true;
+                                expansionTile = MasterTileList[x, y - 1];
                             }
                             break;
                         case 3:
                             // try to grow down
                             if (y < TileCountY - 1 && MasterTileList[x, y + 1].Available)
                             {
-                                Tiles.Add(MasterTileList[x, y + 1]);
-                                MasterTileList[x, y + 1].Available = false;
-                                MasterTileList[x, y + 1].Region = ID;
-                                bExpanded = true;
+                                expansionTile = MasterTileList[x, y + 1];
                             }
                             break;
                     }
                 }
 
-                if (!bExpanded)
+                if (expansionTile != null)
+                {
+                    Tiles.Add(expansionTile);
+                    expansionTile.Available = false;
+                    expansionTile.Region = ID;
+                }
+                else
                 {
                     FailedExpansionCount++;
                 }
@@ -153,14 +150,14 @@ namespace Win2D_BattleRoyale
                 // calculate chances that a tile in an overtaken region is drawn in the conquering color
                 // chance increases as region shrinks
                 int r = Math.Max(50, Tiles.Count / 200);
-                if (OvertakingRegion != null && Statics.Random.Next(r) == 0)
+                if (OvertakingFaction != null && Statics.Random.Next(r) == 0)
                 {
                     args.DrawingSession.FillRectangle(
                         new Rect(MapPosition.X + Statics.LeftColumnPadding + tile.Coordinates.X * Map.PixelScale,
                                  MapPosition.Y + Statics.LeftColumnPadding + tile.Coordinates.Y * Map.PixelScale,
                                  Map.PixelScale,
                                  Map.PixelScale),
-                        OvertakingRegion.Color);
+                        OvertakingFaction.Color);
 
                     _overtakingframe++;
                 }
@@ -184,6 +181,74 @@ namespace Win2D_BattleRoyale
             }
 
             return false;
+        }
+
+        public void FindNeighbors(Tile[,] MasterTileList)
+        {
+            int TileCountX = MasterTileList.GetLength(0);
+            int TileCountY = MasterTileList.GetLength(1);
+
+            foreach (Tile tile in Tiles)
+            {
+                int x = (int)tile.Coordinates.X;
+                int y = (int)tile.Coordinates.Y;
+
+                if (x > 0)
+                {
+                    // analyze left neighbor
+                    Tile neighbor = MasterTileList[x - 1, y];
+                    if (neighbor.Region != null && neighbor.Region.ID != ID)
+                    {
+                        NeighboringRegions.Add(neighbor.Region);
+                    }
+                }
+
+                if (x < TileCountX - 1)
+                {
+                    // analyze right neighbor
+                    Tile neighbor = MasterTileList[x + 1, y];
+                    if (neighbor.Region != null && neighbor.Region.ID != ID)
+                    {
+                        NeighboringRegions.Add(neighbor.Region);
+                    }
+                }
+
+                if (y > 0)
+                {
+                    // analyze up neighbor
+                    Tile neighbor = MasterTileList[x, y - 1];
+                    if (neighbor.Region != null && neighbor.Region.ID != ID)
+                    {
+                        NeighboringRegions.Add(neighbor.Region);
+                    }
+                }
+
+                if (y < TileCountY - 1)
+                {
+                    // analyze down neighbor
+                    Tile neighbor = MasterTileList[x, y + 1];
+                    if (neighbor.Region != null && neighbor.Region.ID != ID)
+                    {
+                        NeighboringRegions.Add(neighbor.Region);
+                    }
+                }
+            }
+        }
+
+        public override bool Equals(object obj)
+        {
+            Region compare = obj as Region;
+            return compare.ID == this.ID;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ID.GetHashCode();
+        }
+
+        public Region RandomNeighbor()
+        {
+            NeighboringRegions.
         }
     }
 }

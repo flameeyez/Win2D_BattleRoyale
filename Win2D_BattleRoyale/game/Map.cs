@@ -11,6 +11,7 @@ namespace Win2D_BattleRoyale
 {
     class Map
     {
+        #region Debug
         public int MergeCount { get; set; }
         public int FailedExpansionCount
         {
@@ -19,6 +20,7 @@ namespace Win2D_BattleRoyale
                 return Regions.Select(x => x.FailedExpansionCount).Sum();
             }
         }
+        #endregion
 
         private int nWinningImageFrame = 0;
         private int nWinningStringFrame = 0;
@@ -26,15 +28,17 @@ namespace Win2D_BattleRoyale
         private float fWinnerStringPositionX;
         private float fWinnerStringPositionY;
 
+        public List<Faction> Factions = new List<Faction>();
         public List<Region> Regions = new List<Region>();
+
         private Tile[,] MasterTileList;
 
         private TimeSpan UpdateDelta { get; set; }
         public BattleEventArgs LastBattle { get; set; }
         public bool Finished { get { return State == MAPSTATE.FINISHED; } }
-        public Vector2 Position { get; set; }
 
-        #region Dimensions
+        #region Layout
+        public Vector2 Position { get; set; }
         public int WidthInPixels { get; set; }
         public int HeightInPixels { get; set; }
         public static int PixelScale = 3;
@@ -120,10 +124,14 @@ namespace Win2D_BattleRoyale
         private void DrawMap(CanvasAnimatedDrawEventArgs args)
         {
             args.DrawingSession.DrawRectangle(new Rect(Position.X + Statics.LeftColumnPadding, Position.Y + Statics.LeftColumnPadding, WidthInPixels, HeightInPixels), Colors.White);
-            foreach (Region region in Regions)
+            foreach(Faction faction in Factions)
             {
-                region.Draw(Position, args);
+                faction.Draw(Position, args);
             }
+            //foreach (Region region in Regions)
+            //{
+            //    region.Draw(Position, args);
+            //}
         }
         private void DrawWinImage(CanvasAnimatedDrawEventArgs args)
         {
@@ -158,109 +166,135 @@ namespace Win2D_BattleRoyale
             UpdateDelta += args.Timing.ElapsedTime;
             if (UpdateDelta.TotalMilliseconds < Statics.MapUpdateThreshold) { return; }
 
-            switch (State)
-            {
-                case MAPSTATE.READY_FOR_BATTLE:
-                    // reset update timer
-                    UpdateDelta = TimeSpan.Zero;
+            //switch (State)
+            //{
+            //    case MAPSTATE.READY_FOR_BATTLE:
+            //        // reset update timer
+            //        UpdateDelta = TimeSpan.Zero;
 
-                    // fight a battle
-                    Region winner = Regions[Statics.Random.Next(Regions.Count)];
-                    Region loser = RandomNeighbor(winner.ID);
+            //        // fight a battle
+            //        //Region winner = Regions[Statics.Random.Next(Regions.Count)];
+            //        //Region loser = RandomNeighbor(winner.ID);
 
-                    winner.Leader.BattleWins++;
-                    loser.Leader.BattleLosses++;
-                    string strRandomDefeatString = Statics.DefeatWords.RandomString();
+            //        //winner.Leader.BattleWins++;
+            //        //loser.Leader.BattleLosses++;
+            //        //string strRandomDefeatString = Statics.DefeatWords.RandomString();
 
-                    loser.OvertakingRegion = winner;
+            //        //loser.OvertakingRegion = winner;
 
-                    LastBattle = new BattleEventArgs(winner, strRandomDefeatString, loser);
-                    //StringManager.Add(LastBattle.ToRichString());
-                    if (rlb != null) { rlb.Add(LastBattle.ToRichString()); }
+            //        //LastBattle = new BattleEventArgs(winner, strRandomDefeatString, loser);
+            //        ////StringManager.Add(LastBattle.ToRichString());
+            //        //if (rlb != null) { rlb.Add(LastBattle.ToRichString()); }
 
+            //        //State = MAPSTATE.TAKEOVER_IN_PROGRESS;
+            //        break;
+            //    case MAPSTATE.TAKEOVER_IN_PROGRESS:
+            //        // reset update timer
+            //        UpdateDelta = TimeSpan.Zero;
+            //        //MergeRegions(winner.ID, loser.ID);
 
-                    State = MAPSTATE.TAKEOVER_IN_PROGRESS;
-                    break;
-                case MAPSTATE.TAKEOVER_IN_PROGRESS:
-                    // reset update timer
-                    UpdateDelta = TimeSpan.Zero;
-                    //MergeRegions(winner.ID, loser.ID);
+            //        // update one tile per frame
+            //        if (!MiniMerge())
+            //        {
+            //            State = MAPSTATE.PAUSE_BETWEEN_BATTLES;
+            //        }
+            //        break;
+            //    case MAPSTATE.PAUSE_BETWEEN_BATTLES:
+            //        // don't update timer unless threshold reached
+            //        // check for win condition
+            //        if (Regions.Count == 1)
+            //        {
+            //            Leaderboard.DeclareWinner(Regions[0].Leader.ToString());
+            //            State = MAPSTATE.WIN_DRAW_IMAGE;
+            //        }
+            //        else if (UpdateDelta.TotalMilliseconds > Statics.PauseBetweenBattlesMilliseconds)
+            //        {
+            //            UpdateDelta = TimeSpan.Zero;
+            //            State = MAPSTATE.READY_FOR_BATTLE;
+            //        }
+            //        break;
+            //    case MAPSTATE.WIN_DRAW_IMAGE:
+            //        // reset update timer
+            //        UpdateDelta = TimeSpan.Zero;
 
-                    // update one tile per frame
-                    if (!MiniMerge())
-                    {
-                        State = MAPSTATE.PAUSE_BETWEEN_BATTLES;
-                    }
-                    break;
-                case MAPSTATE.PAUSE_BETWEEN_BATTLES:
-                    // don't update timer unless threshold reached
-                    // check for win condition
-                    if (Regions.Count == 1)
-                    {
-                        Leaderboard.DeclareWinner(Regions[0].Leader.ToString());
-                        State = MAPSTATE.WIN_DRAW_IMAGE;
-                    }
-                    else if (UpdateDelta.TotalMilliseconds > Statics.PauseBetweenBattlesMilliseconds)
-                    {
-                        UpdateDelta = TimeSpan.Zero;
-                        State = MAPSTATE.READY_FOR_BATTLE;
-                    }
-                    break;
-                case MAPSTATE.WIN_DRAW_IMAGE:
-                    // reset update timer
-                    UpdateDelta = TimeSpan.Zero;
-
-                    // partial image draw
-                    if (nWinningImageFrame < 100)
-                    {
-                        nWinningImageFrame += 1;
-                    }
-                    else
-                    {
-                        State = MAPSTATE.WIN_DRAW_STRING;
-                    }
-                    break;
-                case MAPSTATE.WIN_DRAW_STRING:
-                    // partial string draw
-                    if (nWinningStringFrame < strWinnerString.Length * 5)
-                    {
-                        nWinningStringFrame++;
-                    }
-                    else if (UpdateDelta.TotalSeconds >= 5)
-                    {
-                        State = MAPSTATE.FINISHED;
-                    }
-                    break;
-            }
+            //        // partial image draw
+            //        if (nWinningImageFrame < 100)
+            //        {
+            //            nWinningImageFrame += 1;
+            //        }
+            //        else
+            //        {
+            //            State = MAPSTATE.WIN_DRAW_STRING;
+            //        }
+            //        break;
+            //    case MAPSTATE.WIN_DRAW_STRING:
+            //        // partial string draw
+            //        if (nWinningStringFrame < strWinnerString.Length * 5)
+            //        {
+            //            nWinningStringFrame++;
+            //        }
+            //        else if (UpdateDelta.TotalSeconds >= 5)
+            //        {
+            //            State = MAPSTATE.FINISHED;
+            //        }
+            //        break;
+            //}
         }
         #endregion
 
         #region Region Operations
         private void MergeRegions(Tile[,] MasterTileList)
         {
-            for (int i = Regions.Count - 1; i >= 0; i--)
+            bool bRestart = true;
+            while (bRestart)
             {
-                if (Regions[i].Tiles.Count <= Statics.MergeThreshold)
+                bRestart = false;
+
+                foreach(Region region in Regions)
                 {
-                    // determine merge direction
-                    // pick random tile and check neighbors for a new region
-                    int nMergeRegion = RandomNeighbor(i).ID;
-                    MergeCount++;
-                    MergeRegions(nMergeRegion, i);
+                    if(region.Tiles.Count <= Statics.MergeThreshold)
+                    {
+                        Region neighbor = region.RandomNeighbor();
+                        MergeCount++;
+                        MergeRegions(region, neighbor);
+                        bRestart = true;
+                    }
                 }
             }
+
+            //for (int i = Regions.Count - 1; i >= 0; i--)
+            //{
+            //    if (Regions[i].Tiles.Count <= Statics.MergeThreshold)
+            //    {
+            //        // determine merge direction
+            //        // pick random tile and check neighbors for a new region
+            //        int nMergeRegion = RandomNeighbor(i).ID;
+            //        MergeCount++;
+            //        MergeRegions(nMergeRegion, i);
+            //    }
+            //}
         }
 
-        private void MergeRegions(int nRegion1, int nRegion2)
+        private void MergeRegions(Region r1, Region r2)
         {
-            foreach (Tile tile in Regions[nRegion2].Tiles)
+            foreach(Tile tile in r2.Tiles)
             {
-                Regions[nRegion1].Tiles.Add(tile);
+                r1.Tiles.Add(tile);
             }
 
-            Regions.RemoveAt(nRegion2);
-            ReindexRegions();
+            Regions.Remove(r2);
         }
+
+        //private void MergeRegions(int nRegion1, int nRegion2)
+        //{
+        //    foreach (Tile tile in Regions[nRegion2].Tiles)
+        //    {
+        //        Regions[nRegion1].Tiles.Add(tile);
+        //    }
+
+        //    Regions.RemoveAt(nRegion2);
+        //    ReindexRegions();
+        //}
         private bool MiniMerge()
         {
             //MergeRegions(winner.ID, loser.ID);
@@ -297,54 +331,56 @@ namespace Win2D_BattleRoyale
             }
         }
 
-        public int GetRegion(int x, int y)
+        public Region GetRegion(int x, int y)
         {
             return MasterTileList[x, y].Region;
         }
 
         public Region RandomNeighbor(int nRegionID)
         {
-            int nReturn = Regions[nRegionID].ID;
-            while (nReturn == Regions[nRegionID].ID)
-            {
-                Tile tileRandom = Regions[nRegionID].Tiles.RandomItem();
-                int tileRandomX = (int)tileRandom.Coordinates.X;
-                int tileRandomY = (int)tileRandom.Coordinates.Y;
+            return Regions[nRegionID].RandomNeighbor();
 
-                switch (Statics.Random.Next(4))
-                {
-                    case 0:
-                        // left
-                        if (tileRandomX > 0)
-                        {
-                            nReturn = MasterTileList[tileRandomX - 1, tileRandomY].Region;
-                        }
-                        break;
-                    case 1:
-                        // right
-                        if (tileRandomX < WidthInTiles - 1)
-                        {
-                            nReturn = MasterTileList[tileRandomX + 1, tileRandomY].Region;
-                        }
-                        break;
-                    case 2:
-                        // up
-                        if (tileRandomY > 0)
-                        {
-                            nReturn = MasterTileList[tileRandomX, tileRandomY - 1].Region;
-                        }
-                        break;
-                    case 3:
-                        // down
-                        if (tileRandomY < HeightInTiles - 1)
-                        {
-                            nReturn = MasterTileList[tileRandomX, tileRandomY + 1].Region;
-                        }
-                        break;
-                }
-            }
+            //Region region = Regions[nRegionID];
+            //while (region == Regions[nRegionID])
+            //{
+            //    Tile tileRandom = Regions[nRegionID].Tiles.RandomItem();
+            //    int tileRandomX = (int)tileRandom.Coordinates.X;
+            //    int tileRandomY = (int)tileRandom.Coordinates.Y;
 
-            return Regions[nReturn];
+            //    switch (Statics.Random.Next(4))
+            //    {
+            //        case 0:
+            //            // left
+            //            if (tileRandomX > 0)
+            //            {
+            //                region = MasterTileList[tileRandomX - 1, tileRandomY].Region;
+            //            }
+            //            break;
+            //        case 1:
+            //            // right
+            //            if (tileRandomX < WidthInTiles - 1)
+            //            {
+            //                region = MasterTileList[tileRandomX + 1, tileRandomY].Region;
+            //            }
+            //            break;
+            //        case 2:
+            //            // up
+            //            if (tileRandomY > 0)
+            //            {
+            //                region = MasterTileList[tileRandomX, tileRandomY - 1].Region;
+            //            }
+            //            break;
+            //        case 3:
+            //            // down
+            //            if (tileRandomY < HeightInTiles - 1)
+            //            {
+            //                region = MasterTileList[tileRandomX, tileRandomY + 1].Region;
+            //            }
+            //            break;
+            //    }
+            //}
+
+            //return region;
         }
         #endregion
     }

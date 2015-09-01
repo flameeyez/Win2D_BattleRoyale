@@ -49,7 +49,117 @@ namespace Win2D_BattleRoyale
         public static CanvasTextFormat FontLarge = new CanvasTextFormat();
         public static CanvasTextFormat FontExtraLarge = new CanvasTextFormat();
 
+        #region Region Naming
         public static string[] RegionTypes = {
+            "Forest",
+            "Plains",
+            "Desert",
+            "Mountain",
+            "Plateau",
+            "Steppes",
+            "Volcano",
+            "Highlands",
+            "Canyon",
+            "Valley",
+            "Marsh",
+            "Bog",
+            "Swamp",
+            "Drylands",
+            "Wetlands",
+            "Jungle",
+            "Hills"
+        };
+
+        public static string[] RegionNames = {
+            "Cornelia",
+            "Pravoka",
+            "Elfheim",
+            "Duergar",
+            "Melmond",
+            "Onrac",
+            "Lufenia",
+            "Gaia",
+
+            "Altair",
+            "Gatrea",
+            "Paloom",
+            "Poft",
+            "Salamand",
+            "Bafsk",
+            "Fynn",
+            "Mysidia",
+            "Machanon",
+
+            "Ur",
+            "Kazus",
+            "Canaan",
+            "Tozus",
+            "Tokkul",
+            "Gysahl",
+            "Amur",
+            "Replito",
+            "Duster",
+            "Saronia",
+            "Falgabard",
+
+            "Baron",
+            "Kaipo",
+            "Fabul",
+            "Troia",
+            "Mist",
+            "Mythril",
+            "Agart",
+            "Eblan",
+            "Tomra",
+
+            "Tule",
+            "Carwen",
+            "Walse",
+            "Karnak",
+            "Crescent",
+            "Jachol",
+            "Istory",
+            "Lix",
+            "Regole",
+            "Quelb",
+            "Surgate",
+            "Moore",
+
+            "Narshe",
+            "Figaro",
+            "Mobliz",
+            "Nikeah",
+            "Kohlingen",
+            "Jidoor",
+            "Zozo",
+            "Maranda",
+            "Tzen",
+            "Albrook",
+            "Vector",
+            "Thamasa"
+        };
+
+        public static string RandomRegionType()
+        {
+            string strRegionType = RegionTypes.RandomString();
+            string strRegionName = RegionNames.RandomString();
+
+            switch(Statics.Random.Next(2))
+            {
+                case 0:
+                    // use region type as prefix
+                    return strRegionType + " of " + strRegionName;
+                case 1:
+                    // use region type as suffix
+                    return strRegionName + " " + strRegionType;
+                default:
+                    return string.Empty;
+            }
+        }
+        #endregion
+
+        #region Faction Naming
+        public static string[] FactionTypes = {
             "Kingdom",
             "Empire",
             "Duchy",
@@ -64,7 +174,9 @@ namespace Win2D_BattleRoyale
             "Monarchy",
             "Tribe"
         };
+        #endregion
 
+        #region Battle Terms
         public static string[] DefeatWords = {
             "defeateth",
             "obliterateth",
@@ -91,7 +203,9 @@ namespace Win2D_BattleRoyale
             "thrasheth",
             "overpowereth"
         };
+        #endregion
 
+        #region Leader Titles
         public static string[] MaleTitles = {
             "King",
             "Emperor",
@@ -124,8 +238,7 @@ namespace Win2D_BattleRoyale
             "Emira",
             "Vicereine"
         };
-
-
+        #endregion
 
         static Statics()
         {

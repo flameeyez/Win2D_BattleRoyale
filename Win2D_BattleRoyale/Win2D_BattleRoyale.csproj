@@ -100,6 +100,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="game\BattleEventArgs.cs" />
+    <Compile Include="game\Faction.cs" />
     <Compile Include="game\IRichString.cs" />
     <Compile Include="game\Leader.cs" />
     <Compile Include="game\Leaderboard.cs" />
